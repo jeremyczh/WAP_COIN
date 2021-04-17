@@ -8,8 +8,11 @@ bc = Blockchain()
 # block_1 = Block(0, [])
 # bc.addBlock(block_1)
 
-# block_2 = Block(1, [])
-# bc.addBlock(block_2)
+block_2 = Block(1, [])
+bc.addBlock(block_2)
+
+block_2.mineBlock(10)
+
 
 # block_3 = Block(2, [])
 # bc.addBlock(block_3)
@@ -28,8 +31,9 @@ bc = Blockchain()
 
 # bc.minePendingTransactions("Miner1")
 
-key = bc.generateKeys()
-bc.addTransaction("test", "test1", 10, key, key)
+# key = bc.generateKeys()
+# bc.addTransaction("test", "test1", 10, key, key)
+# bc.addTransaction("Jeremy", "John", 2, key, key)
 
 
 

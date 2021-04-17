@@ -116,14 +116,16 @@ class Block (object):
 
         arrStr = map(str, arr)
         hashPuzzle = ''.join(arrStr)
+        start_time = time()
         while self.hash[0:difficulty] != hashPuzzle:
             self.nonse += 1
-            self.hash = self.calculateHash();
-            print("Nonse:", self.nonse);
-            print("Hash Attempt:", self.hash);
-            print("Hash We Want:", hashPuzzle, "...");
-            print("");
+            self.hash = self.calculateHash()
+            # print("Nonse:", self.nonse);
+            # print("Hash Attempt:", self.hash);
+            # print("Hash We Want:", hashPuzzle, "...");
+            # print("");
         print("BLOCK MINED! Nonse to Solve Proof of Work: ", self.nonse)
+        print("Time taken: ", time()-start_time)
         return True
 
     def calculateHash(self):
