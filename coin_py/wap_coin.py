@@ -5,8 +5,8 @@ from uuid import uuid4
 # import jsonpickle
 # from flask import Flask
 from urllib.parse import urlparse
-# from Crypto.PublicKey import RSA
-# from Crypto.Signature import *
+from Crypto.PublicKey import RSA
+from Crypto.Signature import *
 from time import time
 from datetime import datetime
 import requests
@@ -38,53 +38,37 @@ class Blockchain (object):
 
         return genBlock
 
-    def minePendingTransactions(self, miner):
-
-        lenPT = len(self.pendingTransactions);
-        if(lenPT <= 1):
-            print("Not enough transactions to mine! (Must be > 1)")
-            return False;
-        else:
-            for i in range(0, lenPT, self.blockSize):
-
-                end = i + self.blockSize;
-                if i >= lenPT:
-                    end = lenPT;
-
-                transactionSlice = self.pendingTransactions[i:end];
-
-                newBlock = Block(len(self.chain), transactionSlice);
-                # print(type(self.getLastBlock()));
-
-                hashVal = self.getLastBlock().hash;
-                newBlock.prev = hashVal;
-                newBlock.mineBlock(self.difficulty);
-                self.chain.append(newBlock);
-            print("Mining Transactions Success!");
-
-            payMiner = Transaction("Miner Rewards", miner, self.minerRewards);
-            self.pendingTransactions = [payMiner];
-        return True;
-
     def addTransaction(self, sender, receiver, amt, keyString, senderKey):
-        keyByte = keyString.encode("ASCII")
-        senderKeyByte = senderKey.encode("ASCII")
+        keyByte = keyString.encode('ASCII')
+        senderKeyByte = senderKey.encode('ASCII')
 
         key = RSA.import_key(keyByte)
-        senderKey = RSA.import_ley(senderKeyByte)
+        senderKey = RSA.import_key(senderKeyByte)
 
         if not sender or not receiver or not amt:
             return False
-
+        
         transaction = Transaction(sender, receiver, amt)
 
-        transaction.signTransaction(key, senderKey);
+        transaction.signTransaction(key, senderKey)
 
         if not transaction.isValidTransaction():
-            print("transaction error 2");
-            return False;
-        self.pendingTransactions.append(transaction);
-        return len(self.chain) + 1;
+            print("transaction error: not signed")
+            return False
+        self.pendingTransactions.append(transaction)
+        return len(self.chain)+1
+
+    def generateKeys(self):
+        key = RSA.generate(2048)
+        private_key = key.export_key()
+        file_out = open("private.pem", "wb")
+        file_out.write(private_key)
+
+        public_key = key.publickey().export_key()
+        file_out = open("receiver.pem", "wb")
+        file_out.write(public_key)
+        
+        return key.publickey().export_key().decode('ASCII')
 
     def chainJSONencode(self):
         blockArrJSON = []
@@ -160,6 +144,7 @@ class Transaction (object):
         self.amt = amt
         self.time = time()
         self.hash = self.calculateHash()
+        self.signature = None
 
     def calculateHash(self):
         hashString = self.sender + self.receiver + \
@@ -169,20 +154,24 @@ class Transaction (object):
         return hashlib.sha256(hashEncoded).hexdigest()
 
     def signTransaction(self, key, senderKey):
-        if(self.hash != self.calculateHash()):
-            print("transaction tampered error");
-            return False;
-        #print(str(key.publickey().export_key()));
-        #print(self.sender);
-        if(str(key.publickey().export_key()) != str(senderKey.publickey().export_key())):
-            print("Transaction attempt to be signed from another wallet");
-            return False;
+        if self.hash != self.calculateHash():
+            print("transaction error: could not be verified")
+            return False
 
-        #h = MD5.new(self.hash).digest();
+        if str(key.publickey().export_key()) != str(senderKey.publickey().export_key()):
+            print("transaction error: attempt from another wallet")
+            return False
 
-        pkcs1_15.new(key);
+        self.signature = "signed"
+        return True
 
-        self.signature = "made";
-        #print(key.sign(self.hash, ""));
-        print("made signature!");
-        return True;
+    def isValidTransaction(self):
+        if self.hash != self.calculateHash():
+            return False
+        if self.sender == self.receiver:
+            return False
+        if self.sender == 'Miner Reward':
+            return True
+        if not self.signature == "signed":
+            return False
+        return True
