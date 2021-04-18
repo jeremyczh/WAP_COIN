@@ -16,9 +16,9 @@ class Blockchain (object):
     def __init__(self):
         self.chain = [self.addGenesisBlock()]
         self.pendingTransactions = []
-        self.difficulty = 4
+        self.difficulty = 5
         self.minerRewards = 50
-        self.blockSize = 10
+        self.blockSize = 2
         self.newBlock = self.generateRawBlock()
 
     def generateRawBlock(self):
@@ -67,6 +67,11 @@ class Blockchain (object):
         block = Block(len(self.chain), trxSlice)
         block.prev = self.getLastBlock().hash
 
+        try:
+            block.mineBlock(self.difficulty)
+        except:
+            print("Unable to mine block" + block.block_id)
+
         self.pendingTransactions = self.pendingTransactions[self.blockSize:]
         self.chain.append(block)
         
@@ -74,8 +79,6 @@ class Blockchain (object):
         self.pendingTransactions.append(mineReward)
     
         return True
-            
-
 
     def generateKeys(self):
         key = RSA.generate(2048)
@@ -136,7 +139,9 @@ class Block (object):
         arrStr = map(str, arr)
         hashPuzzle = ''.join(arrStr)
         start_time = time()
-        while self.hash[0:difficulty] != hashPuzzle:
+        # difficulty_hash = 0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        # while int(self.hash, 16) >= difficulty_hash:
+        while self.hash[:difficulty] != hashPuzzle:
             self.nonse += 1
             self.hash = self.calculateHash()
             # print("Nonse:", self.nonse);

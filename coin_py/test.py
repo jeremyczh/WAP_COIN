@@ -22,16 +22,31 @@ bc = Blockchain()
 # print(block_1.hash)
 # print(block_1.calculateHash())
 
-transaction = Transaction("Jeremy", "John", 1)
-bc.pendingTransactions.append(transaction)
-bc.pendingTransactions.append(transaction)
+# transaction = Transaction("Jeremy", "John", 1)
+# bc.pendingTransactions.append(transaction)
+# bc.pendingTransactions.append(transaction)
+
+
+
+key = bc.generateKeys()
+bc.addTransaction("test", "test1", 10, key, key)
+bc.addTransaction("Jeremy", "John", 2, key, key)
+bc.addTransaction("Jeremy", "John", 2, key, key)
+bc.addTransaction("Jeremy", "John", 2, key, key)
+bc.addTransaction("Jeremy", "John", 2, key, key)
+bc.addTransaction("Jeremy", "John", 2, key, key)
 
 bc.minePendingTransactions("Miner1")
 bc.minePendingTransactions("Miner1")
-
-# key = bc.generateKeys()
-# bc.addTransaction("test", "test1", 10, key, key)
-# bc.addTransaction("Jeremy", "John", 2, key, key)
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
+bc.minePendingTransactions("Miner1")
 
 # testArr = [1,2,3]
 # print(testArr[0:10])
