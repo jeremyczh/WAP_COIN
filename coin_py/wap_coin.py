@@ -19,6 +19,11 @@ class Blockchain (object):
         self.difficulty = 4
         self.minerRewards = 50
         self.blockSize = 10
+        self.newBlock = self.generateRawBlock()
+
+    def generateRawBlock(self):
+        block = Block(self.getLastBlock().block_id, [])
+        return block
 
     def getLastBlock(self):
         return self.chain[-1]
@@ -32,7 +37,6 @@ class Blockchain (object):
 
     def addGenesisBlock(self):
         tArr = []
-        tArr.append(Transaction('me', 'you', 1))
         genBlock = Block(0, tArr)
         genBlock.prev = 'GENESIS'
 
@@ -58,10 +62,19 @@ class Blockchain (object):
         self.pendingTransactions.append(transaction)
         return len(self.chain)+1
 
-    def minePendingTransactions(self):
+    def minePendingTransactions(self, miner):       
+        trxSlice = self.pendingTransactions[:self.blockSize]
+        block = Block(len(self.chain), trxSlice)
+        block.prev = self.getLastBlock().hash
+
+        self.pendingTransactions = self.pendingTransactions[self.blockSize:]
+        self.chain.append(block)
         
-        lenPending = len(self.pendingTransactions)
-        for i in range(0, lenPending, self.blockSize):
+        mineReward = Transaction("MINER REWARD", miner, self.minerRewards)
+        self.pendingTransactions.append(mineReward)
+    
+        return True
+            
 
 
     def generateKeys(self):
