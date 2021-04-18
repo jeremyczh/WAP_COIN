@@ -58,6 +58,12 @@ class Blockchain (object):
         self.pendingTransactions.append(transaction)
         return len(self.chain)+1
 
+    def minePendingTransactions(self):
+        
+        lenPending = len(self.pendingTransactions)
+        for i in range(0, lenPending, self.blockSize):
+
+
     def generateKeys(self):
         key = RSA.generate(2048)
         private_key = key.export_key()

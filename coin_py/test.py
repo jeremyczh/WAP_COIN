@@ -11,7 +11,7 @@ bc = Blockchain()
 block_2 = Block(1, [])
 bc.addBlock(block_2)
 
-block_2.mineBlock(10)
+# block_2.mineBlock(10)
 
 
 # block_3 = Block(2, [])
@@ -35,6 +35,7 @@ block_2.mineBlock(10)
 # bc.addTransaction("test", "test1", 10, key, key)
 # bc.addTransaction("Jeremy", "John", 2, key, key)
 
-
+testArr = [1,2,3]
+print(testArr[0:10])
 
 pp.pprint(bc.chainJSONencode())
