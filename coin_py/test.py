@@ -51,5 +51,7 @@ bc.minePendingTransactions("Miner1")
 # testArr = [1,2,3]
 # print(testArr[0:10])
 
+print(1234)
+
 
 pp.pprint(bc.chainJSONencode())
